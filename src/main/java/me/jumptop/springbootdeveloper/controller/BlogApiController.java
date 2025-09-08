@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor // blogService만을 파라미터로 받는 생성자를 자동 생성함
@@ -20,8 +21,8 @@ public class BlogApiController {
 
     // HTTP 메서드가 Post일때 전달받은 URL과 동일하면 메서드로 매핑
     @PostMapping("/api/articles")
-    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request) { // @RequestBody로 요청 본문 값 매핑
-        Article savedArticle = blogService.save(request);
+    public ResponseEntity<Article> addArticle(@RequestBody AddArticleRequest request, Principal principal) { // @RequestBody로 요청 본문 값 매핑
+        Article savedArticle = blogService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
     }
@@ -46,14 +47,14 @@ public class BlogApiController {
 
     @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable long id) {
-        blogService.deleteById(id);
+        blogService.delete(id);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/api/articles/{id}")
     public ResponseEntity<Article> updateArticle(@PathVariable long id, @RequestBody UpdateArticleRequest request) {
-        Article updateArticle = blogService.updateById(id, request);
+        Article updateArticle = blogService.update(id, request);
 
         return ResponseEntity.ok().body(updateArticle);
     }
