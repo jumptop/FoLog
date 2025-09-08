@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TokenApiControllerTest {
+class TokenApiControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -37,7 +37,7 @@ public class TokenApiControllerTest {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected WebApplicationContext context;
+    private WebApplicationContext context;
 
     @Autowired
     JwtProperties jwtProperties;
@@ -50,11 +50,12 @@ public class TokenApiControllerTest {
 
     @BeforeEach
     public void mockMvcSetUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .build();
         userRepository.deleteAll();
     }
 
-    @DisplayName("createNewAccessToken : 새로운 액세스 토큰을 발급한다.")
+    @DisplayName("createNewAccessToken: 새로운 액세스 토큰을 발급한다.")
     @Test
     public void createNewAccessToken() throws Exception {
         // given
@@ -67,7 +68,8 @@ public class TokenApiControllerTest {
 
         String refreshToken = JwtFactory.builder()
                 .claims(Map.of("id", testUser.getId()))
-                .build().createToken(jwtProperties);
+                .build()
+                .createToken(jwtProperties);
 
         refreshTokenRepository.save(new RefreshToken(testUser.getId(), refreshToken));
 
@@ -85,4 +87,5 @@ public class TokenApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty());
     }
+
 }
